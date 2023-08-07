@@ -1,0 +1,20 @@
+# Library
+/node_modules
+
+# OS
+.DS_Store
+.airplane
+
+# IDE
+.vscode/*
+
+# API Keys
+.env
+airplane.dev.yaml
+
+# Airplane 
+.airplane-view
+
+# Misc / Jest
+coverage
+dist

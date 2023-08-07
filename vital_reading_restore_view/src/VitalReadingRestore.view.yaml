@@ -1,0 +1,4 @@
+slug: vital_reading_restore_tool_jb
+entrypoint: VitalReadingRestore.view.tsx
+name: Archived Vital Reading Lookup/Restore Tool
+description: "A tool for fetching and restoring subscriber vital readings that have been archived."

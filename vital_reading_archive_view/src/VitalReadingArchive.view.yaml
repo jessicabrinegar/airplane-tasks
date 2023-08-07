@@ -1,0 +1,4 @@
+slug: vital_reading_archive_tool_jb
+entrypoint: VitalReadingArchive.view.tsx
+name: Vital Reading Lookup/Archive Tool
+description: "A tool for fetching and archiving subscriber vital readings."

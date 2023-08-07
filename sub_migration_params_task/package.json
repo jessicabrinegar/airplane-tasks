@@ -1,0 +1,14 @@
+{
+  "name": "sub_migration_params_jb",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "airplane": "^0.2.71",
+    "csv-parser": "^3.0.0",
+    "fs": "^0.0.1-security",
+    "aws-sdk": "^2.1332.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.5"
+  }
+}
