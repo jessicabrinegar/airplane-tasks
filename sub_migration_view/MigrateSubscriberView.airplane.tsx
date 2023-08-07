@@ -29,7 +29,7 @@ const MigrateSubscriberView = () => {
     <>
     <div className="title">
       <Heading color="gray" className="justify-content-center">
-        Migration Information Station
+        Migrate Subscriber View
       </Heading>
     </div>
     <section className="form-container">
