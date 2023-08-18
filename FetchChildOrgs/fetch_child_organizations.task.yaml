@@ -1,0 +1,24 @@
+# Full reference: https://docs.airplane.dev/tasks/task-definition
+
+# Used by Airplane to identify your task. Do not change.
+slug: fetch_child_organizations_jb
+
+# A human-readable name for your task.
+name: Fetch Child Org Info
+description: Retrieves a list of all child organizations located within the top-level organization, based on the OrganizationID provided.
+# A list of inputs to your task.
+parameters:
+    - name: Top Level Organization ID
+      slug: organization_id
+      type: shorttext
+      description: Top Level Organization ID
+      required: true
+
+# Configuration for a SQL task.
+sql:
+    resource: 'postgres_prod_orgs'
+    entrypoint: fetch_child_organizations.sql
+    transactionMode: readOnly
+
+    queryArgs:
+        organization_id: '{{params.organization_id}}'
