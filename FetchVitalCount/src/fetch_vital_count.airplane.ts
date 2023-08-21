@@ -67,26 +67,8 @@ const FetchBySubscriberIds = async (params: any) => {
   const dateTo = params.date_to?.toISOString()?.split("T")?.[0];
 
   const result = await RunQuery(subscriberIds, dateFrom, dateTo);
-  
-  const resultMap = {};
 
-  result.forEach((item) => {
-    if (!resultMap[item.subscriber_id]) {
-      resultMap[item.subscriber_id] = {
-        subscriber_id: item.subscriber_id,
-        total_vital_signs: 0,
-      };
-    }
-    resultMap[item.subscriber_id].total_vital_signs++;
-  });
-
-  const finalResultArray = Object.values(resultMap)
-  .map((item:any) => ({
-    subscriber_id: item.subscriber_id,
-    total_vital_signs: item.total_vital_signs,
-  }));
-
-  return finalResultArray;
+  return result;
 };
 
 const RunQuery = async (
@@ -99,11 +81,11 @@ const RunQuery = async (
   const run = await airplane.sql.query(
     "postgres_prod_vitals",
     `
-    SELECT subscriber_id, COUNT(*) AS total_vital_signs
+    SELECT subscriber_id, COUNT(DISTINCT raw_record_id) AS total_vital_signs
     FROM vital.vital_reading
     WHERE subscriber_id IN  (${subscriberIds})
     AND recorded_at::DATE >= '${dateFrom}' AND recorded_at::DATE <= '${dateTo}'
-    GROUP BY subscriber_id, raw_record_id;         
+    GROUP BY subscriber_id;         
     `
   );
 
@@ -178,25 +160,7 @@ const FetchByOrganizationId = async (
       dateTo
     );
 
-    const resultMap = {};
-
-  result.forEach((item) => {
-    if (!resultMap[item.subscriber_id]) {
-      resultMap[item.subscriber_id] = {
-        subscriber_id: item.subscriber_id,
-        total_vital_signs: 0,
-      };
-    }
-    resultMap[item.subscriber_id].total_vital_signs++;
-  });
-
-  const finalResultArray = Object.values(resultMap)
-  .map((item:any) => ({
-    subscriber_id: item.subscriber_id,
-    total_vital_signs: item.total_vital_signs,
-  }));
-
-  finalResultArray?.length && output.push(...finalResultArray);
+    result?.length && output.push(...result);
   }
 
   return output;
