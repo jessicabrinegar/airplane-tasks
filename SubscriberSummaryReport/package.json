@@ -1,0 +1,15 @@
+{
+  "name": "subscribersummaryreport",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "airplane": "^0.2.44",
+    "date-fns-tz": "^2.0.0",
+    "mailgun.js": "^8.2.1",
+    "papaparse": "^5.4.0",
+    "zipcode-to-timezone": "^0.0.9"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3"
+  }
+}
