@@ -36,7 +36,7 @@ export default airplane.task(
 			from acm.subscriber
 			group by mrn
 			having COUNT(*) > 1;        
-      		`
+      `
     );
 
     return run.output.Q1;

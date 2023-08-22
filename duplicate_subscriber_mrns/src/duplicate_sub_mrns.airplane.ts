@@ -30,23 +30,23 @@ export default airplane.task(
       SELECT subscriber.id, subscriber.organization_id,
       person.first_name, person.last_name,
       subscriber.integration_metadata->>'ANL_ACCT_NUM' AS Xmit,
-      subscriber.integration_metadata->>'mrn' AS mrn,
+      subscriber.integration_metadata->>'patientId' AS patientId,
       subscriber.integration_metadata 
       FROM acm.subscriber as subscriber, acm.person as person
-      WHERE subscriber.integration_metadata->>'mrn'
+      WHERE subscriber.integration_metadata->>'patientId'
       IN (
         SELECT 
         CASE 
-          when jsonb_exists(subscriber.integration_metadata, 'mrn')
-          then subscriber.integration_metadata->>'mrn'
-          else 'Unknown'
-        END AS mrn
+          when jsonb_exists(subscriber.integration_metadata, 'patientId')
+          then subscriber.integration_metadata->>'patientId'
+          else '00000000-0000-0000-0000-000000000000'
+        END AS patientId
         FROM acm.subscriber
-        GROUP BY mrn
+        GROUP BY patientId
         HAVING COUNT(*) > 1
       )
       AND person.id = subscriber.id
-      ORDER BY mrn;       
+      ORDER BY patientId;       
       		`
     );
 
