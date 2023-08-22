@@ -26,19 +26,21 @@ export default airplane.task(
         const run = await airplane.sql.query(
             params.database,
             `
-            SELECT DISTINCT
-            duplicates.patientId,
-            person.first_name,
-            person.last_name,
-            ARRAY_AGG(DISTINCT subscriber.organization_id) AS organization_id,
-            duplicates.duplicate_count,
-            ARRAY_AGG(subscriber.id) AS subscriber_ids
+            SELECT
+              duplicates.patientId,
+              person.first_name,
+              person.last_name,
+              ARRAY_AGG(DISTINCT subscriber.organization_id) AS organization_id,
+              duplicates.duplicate_count,
+              ARRAY_AGG(subscriber.id) AS subscriber_ids
             FROM (
                 SELECT
                     subscriber.integration_metadata->>'patientId' AS patientId,
                     COUNT(*) AS duplicate_count
                 FROM
                     acm.subscriber
+                WHERE
+                    archived = false AND active = true
                 GROUP BY
                     patientId
                 HAVING
@@ -49,7 +51,7 @@ export default airplane.task(
             JOIN
                 acm.person AS person ON subscriber.id = person.id
             GROUP BY
-                duplicates.patientId, person.first_name, person.last_name, duplicates.duplicate_count, subscriber.organization_id;
+                duplicates.patientId, person.first_name, person.last_name, duplicates.duplicate_count;
             `
         );
         return run.output.Q1;
