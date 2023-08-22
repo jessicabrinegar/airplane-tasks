@@ -5,7 +5,7 @@ export default airplane.task(
       slug: "duplicate_subscriber_task_jb",
       name: "Duplicate Subscribers (by patientId)",
       description:
-        "Fetches duplicate patientIds, returning the subscriber information.",
+        "Fetches duplicate patientIds, returning the subscribers' information.",
       resources: ["postgres_prod_orgs"],
       parameters: {
         database: {
@@ -24,19 +24,15 @@ export default airplane.task(
     async (params: any) => {
 
         const run = await airplane.sql.query(
-            "postgres_prod_orgs",
+            params.database,
             `
             SELECT DISTINCT
             duplicates.patientId,
             person.first_name,
             person.last_name,
-            CASE
-                WHEN COUNT(DISTINCT subscriber.organization_id) = 1 THEN
-                    subscriber.organization_id
-                ELSE
-                '00000000-0000-0000-0000-000000000000'
-            END AS organization_id,
-            duplicates.duplicate_count
+            ARRAY_AGG(DISTINCT subscriber.organization_id) AS organization_id,
+            duplicates.duplicate_count,
+            ARRAY_AGG(subscriber.id) AS subscriber_ids
             FROM (
                 SELECT
                     subscriber.integration_metadata->>'patientId' AS patientId,
@@ -55,5 +51,6 @@ export default airplane.task(
             GROUP BY
                 duplicates.patientId, person.first_name, person.last_name, duplicates.duplicate_count, subscriber.organization_id;
             `
-        )
+        );
+        return run.output.Q1;
 })
