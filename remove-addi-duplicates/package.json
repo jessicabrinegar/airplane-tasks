@@ -1,0 +1,12 @@
+{
+  "name": "remove-addi-duplicates",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "airplane": "^0.2.72",
+    "axios": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.3"
+  }
+}
