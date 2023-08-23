@@ -6,7 +6,7 @@ export default airplane.task(
     name: "Duplicate Subscribers (by mrn)",
     description:
       "Fetches duplicate MRNs, returning the subscriber information.",
-    resources: ["postgres_prod_orgs"],
+    resources: ["postgres_prod_orgs", "postgres_dev_organizations"],
     parameters: {
       database: {
         name: "Database",

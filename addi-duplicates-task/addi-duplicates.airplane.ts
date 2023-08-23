@@ -6,7 +6,7 @@ export default airplane.task(
       name: "Duplicate Subscribers (by patientId)",
       description:
         "Fetches duplicate patientIds, returning the subscribers' information.",
-      resources: ["postgres_prod_orgs"],
+      resources: ["postgres_prod_orgs", "postgres_dev_organizations"],
       parameters: {
         database: {
           name: "Database",
@@ -22,36 +22,39 @@ export default airplane.task(
     },
 
     async (params: any) => {
+      const database = params.database;
 
         const run = await airplane.sql.query(
-            params.database,
+            database,
             `
             SELECT
-              duplicates.patientId,
-              person.first_name,
-              person.last_name,
-              ARRAY_AGG(DISTINCT subscriber.organization_id) AS organization_id,
-              duplicates.duplicate_count,
-              ARRAY_AGG(subscriber.id) AS subscriber_ids
+            duplicates.patientId,
+            duplicates.duplicate_count,
+            CONCAT(person.first_name, ' ', person.last_name) AS name,
+            subscriber.organization_id AS organization_id,
+            json_agg(subscriber.id) AS subscriber_ids
             FROM (
-                SELECT
-                    subscriber.integration_metadata->>'patientId' AS patientId,
-                    COUNT(*) AS duplicate_count
-                FROM
-                    acm.subscriber
-                WHERE
-                    archived = false AND active = true
-                GROUP BY
-                    patientId
-                HAVING
-                    COUNT(*) > 1
+              SELECT
+              integration_metadata->>'patientId' AS patientId,
+              COUNT(*) AS duplicate_count
+              FROM
+              acm.subscriber
+              WHERE
+              archived = false AND active = true
+              GROUP BY
+              patientId
+              HAVING
+              COUNT(*) > 1
             ) AS duplicates
             JOIN
                 acm.subscriber AS subscriber ON duplicates.patientId = subscriber.integration_metadata->>'patientId'
             JOIN
                 acm.person AS person ON subscriber.id = person.id
+            WHERE
+                subscriber.archived = false AND subscriber.active = true
             GROUP BY
-                duplicates.patientId, person.first_name, person.last_name, duplicates.duplicate_count;
+                duplicates.patientId, duplicates.duplicate_count, name, organization_id
+            ORDER BY duplicates.duplicate_count DESC;
             `
         );
         return run.output.Q1;
